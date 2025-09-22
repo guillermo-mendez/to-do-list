@@ -1,0 +1,970 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Provisiones API",
+    "description": "Provisiones API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "security": [],
+        "produces": [
+          "application/json"
+        ],
+        "description": "Login",
+        "summary": "Autenticar usuario",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "user": {
+                    "type": "string",
+                    "example": "admin"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "Test1234*"
+                  }
+                },
+                "required": [
+                  "email",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "logout",
+        "summary": "logout del usuario autenticado",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/auth/refreshToken": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "refresh token",
+        "summary": "Actualizar token",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+
+    "/provisions/api/v1/pending/creation-individual-provisions": {
+      "post": {
+        "tags": [
+          "Pending"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Creación de provisiones individuales",
+        "description": "Creación de provisiones individuales",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reasonProvision": {
+                    "type": "string",
+                    "example": "Motivo de provision",
+                    "minimum": 1,
+                    "maximum": 50,
+                    "required": true,
+                    "description": "Motivo de provision."
+                  },
+                  "companyId": {
+                    "type": "integer",
+                    "example": 1,
+                    "required": true,
+                    "description": "Id de la sociedad."
+                  },
+                  "costCenterId": {
+                    "type": "integer",
+                    "example": 1,
+                    "required": false,
+                    "description": "El campo centro de costo es un campo es opcional."
+                  },
+                  "internalOrderId": {
+                    "type": "integer",
+                    "example": 1,
+                    "required": false,
+                    "description": "El campo orden interna es un campo es opcional."
+                  },
+                  "pepElementId": {
+                    "type": "integer",
+                    "example": 1,
+                    "required": false,
+                    "description": "El campo elemento PEP es un campo es opcional."
+                  },
+                  "contableAccountsId": {
+                    "type": "integer",
+                    "example": 1,
+                    "required": true,
+                    "description": "Cuenta contable."
+                  },
+                  "amount": {
+                    "type": "number",
+                    "multipleOf": 0.01,
+                    "example": 50.52,
+                    "required": true,
+                    "description": "Monto."
+                  },
+                  "supportFile": {
+                    "type": "file",
+                    "description": "Archivo de soporte.",
+                    "required": true,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/provisions/api/v1/pending/creation-individual-reclassification": {
+      "post": {
+        "tags": [
+          "Pending"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Creación de Reclasificaciones individuales",
+        "description": "Creación de Reclasificaciones individuales",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reasonReclassification": {
+                    "type": "string",
+                    "example": "Motivo de reclasificación",
+                    "minimum": 1,
+                    "maximum": 50,
+                    "required": true,
+                    "description": "Motivo de reclasificación."
+                  },
+                  "companyId": {
+                    "type": "integer",
+                    "example": 1,
+                    "required": true,
+                    "description": "Id de la sociedad."
+                  },
+                  "origin": {
+                    "type": "object",
+                    "required": true,
+                    "description": "Los campos de origen [costCenterOriginId, internalOrderOriginId, pepElementOriginId] solo se debe enviar uno de ellos.",
+                    "properties": {
+                      "sourceLedgerAccountId": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "costCenterOriginId": {
+                        "type": "integer",
+                        "required": false,
+                        "description": "Este campos no es obligatorio.",
+                        "example": 1
+                      }
+                    }
+                  },
+                  "destination": {
+                    "type": "object",
+                    "required": true,
+                    "description": "Los campos de destino [costCenterDestinyId, internalOrderDestinyId, pepElementDestinyId] solo se debe enviar uno de ellos.",
+                    "properties": {
+                      "targetLedgerAccountId": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "pepElementDestinyId": {
+                        "type": "integer",
+                        "required": false,
+                        "description": "Este campos no es obligatorio.",
+                        "example": 3
+                      }
+                    }
+                  },
+                  "amount": {
+                    "type": "number",
+                    "multipleOf": 0.01,
+                    "example": 50.52,
+                    "required": true,
+                    "description": "Monto."
+                  },
+                  "supportFile": {
+                    "type": "file",
+                    "description": "Archivo de soporte.",
+                    "required": true,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/provisions/api/v1/pending/creation-mass-provisions": {
+      "post": {
+        "tags": [
+          "Pending"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Creación de provisiones masivas",
+        "description": "Creación de provisiones masivas",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "origin": {
+                    "type": "object",
+                    "required": true,
+                    "description": "Los campos de origen [costCenterOriginCode, internalOrderOriginCode, pepElementOriginCode] solo se debe enviar uno de ellos.",
+                    "properties": {
+                      "companyId": {
+                        "type": "integer",
+                        "example": 1,
+                        "required": true,
+                        "description": "Id de la sociedad."
+                      },
+                      "sourceLedgerAccountNumber": {
+                        "type": "integer",
+                        "example": 670126
+                      },
+                      "accountingKey": {
+                        "type": "integer",
+                        "example": 50
+                      },
+                      "amount": {
+                        "type": "integer",
+                        "example": 100.02
+                      },
+                      "costCenterOriginCode": {
+                        "type": "integer",
+                        "example": 1,
+                        "required": false
+                      }
+                    }
+                  },
+                  "destination": {
+                    "type": "array",
+                    "required": true,
+                    "contentType": "application/json",
+                    "description": "Los campos de destino [costCenterDestinyCode, internalOrderDestinyCode, pepElementDestinyCode] solo se debe enviar uno de ellos.",
+                    "example": [
+                      {
+                        "documentType": "SP",
+                        "reference": "PROVISION MASIVA test",
+                        "creationPeriod": 8,
+                        "documentHeaderText": "PROVISION MASIVA test",
+                        "accountingKey": 40,
+                        "accountingAccountNumber": 670111,
+                        "amount": 50.01,
+                        "assignment": "PROVISION MASIVA test",
+                        "taxIndicator": "V0",
+                        "reasonProvision": "Motivo de provision",
+                        "pepElementDestinyCode": 3
+                      }
+                    ],
+                    "items": {
+                      "type": "object",
+                      "required": true,
+                      "properties": {
+                        "documentType": {
+                          "type": "string",
+                          "example": "SP"
+                        },
+                        "reference": {
+                          "type": "string",
+                          "example": "PROVISION MASIVA test"
+                        },
+                        "creationPeriod": {
+                          "type": "number",
+                          "example": 8
+                        },
+                        "documentHeaderText": {
+                          "type": "string",
+                          "example": "PROVISION MASIVA test"
+                        },
+                        "accountingKey": {
+                          "type": "number",
+                          "example": 40
+                        },
+                        "accountingAccountNumber": {
+                          "type": "number",
+                          "example": 670111
+                        },
+                        "amount": {
+                          "type": "number",
+                          "example": 50.01
+                        },
+                        "assignment": {
+                          "type": "string",
+                          "example": "PROVISION MASIVA test"
+                        },
+                        "taxIndicator": {
+                          "type": "string",
+                          "example": "V0"
+                        },
+                        "reasonProvision": {
+                          "type": "string",
+                          "example": "Motivo de provision",
+                          "minimum": 1,
+                          "maximum": 50,
+                          "required": true,
+                          "description": "Motivo de provisiones."
+                        },
+                        "pepElementDestinyCode": {
+                          "type": "integer",
+                          "required": false,
+                          "description": "Este campos no es obligatorio.",
+                          "example": 3
+                        }
+                      }
+                    }
+                  },
+                  "documents": {
+                    "type": "array",
+                    "description": "Archivo de soporte.",
+                    "required": true,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/provisions/api/v1/pending/creation-mass-reclassification": {
+      "post": {
+        "tags": [
+          "Pending"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Creación de Reclasificaciones masivas",
+        "description": "Creación de Reclasificaciones masivas",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "origin": {
+                    "type": "object",
+                    "required": true,
+                    "description": "Los campos de origen [costCenterOriginCode, internalOrderOriginCode, pepElementOriginCode] solo se debe enviar uno de ellos.",
+                    "properties": {
+                      "companyId": {
+                        "type": "integer",
+                        "example": 1,
+                        "required": true,
+                        "description": "Id de la sociedad."
+                      },
+                      "sourceLedgerAccountNumber": {
+                        "type": "integer",
+                        "example": 670126
+                      },
+                      "accountingKey": {
+                        "type": "integer",
+                        "example": 50
+                      },
+                      "amount": {
+                        "type": "integer",
+                        "example": 100.02
+                      },
+                      "costCenterOriginCode": {
+                        "type": "integer",
+                        "example": 1,
+                        "required": false
+                      }
+                    }
+                  },
+                  "destination": {
+                    "type": "array",
+                    "required": true,
+                    "contentType": "application/json",
+                    "description": "Los campos de destino [costCenterDestinyCode, internalOrderDestinyCode, pepElementDestinyCode] solo se debe enviar uno de ellos.",
+                    "example": [
+                      {
+                        "documentType": "SR",
+                        "reference": "RECLAS OI 40558",
+                        "creationPeriod": 8,
+                        "documentHeaderText": "RECLAS OI 40558",
+                        "accountingKey": 40,
+                        "accountingAccountNumber": 670111,
+                        "amount": 50.01,
+                        "assignment": "RECLAS OI 40558",
+                        "taxIndicator": "V0",
+                        "reasonReclassification": "Motivo de reclasificación",
+                        "pepElementDestinyCode": 3
+                      }
+                    ],
+                    "items": {
+                      "type": "object",
+                      "required": true,
+                      "properties": {
+                        "documentType": {
+                          "type": "string",
+                          "example": "SR"
+                        },
+                        "reference": {
+                          "type": "string",
+                          "example": "RECLAS OI 40558"
+                        },
+                        "creationPeriod": {
+                          "type": "number",
+                          "example": 8
+                        },
+                        "documentHeaderText": {
+                          "type": "string",
+                          "example": "RECLAS OI 40558"
+                        },
+                        "accountingKey": {
+                          "type": "number",
+                          "example": 40
+                        },
+                        "accountingAccountNumber": {
+                          "type": "number",
+                          "example": 670111
+                        },
+                        "amount": {
+                          "type": "number",
+                          "example": 50.01
+                        },
+                        "assignment": {
+                          "type": "string",
+                          "example": "RECLAS OI 40558"
+                        },
+                        "taxIndicator": {
+                          "type": "string",
+                          "example": "V0"
+                        },
+                        "reasonReclassification": {
+                          "type": "string",
+                          "example": "Motivo de reclasificación",
+                          "minimum": 1,
+                          "maximum": 50,
+                          "required": true,
+                          "description": "Motivo de reclasificación."
+                        },
+                        "pepElementDestinyCode": {
+                          "type": "integer",
+                          "required": false,
+                          "description": "Este campos no es obligatorio.",
+                          "example": 3
+                        }
+                      }
+                    }
+                  },
+                  "documents": {
+                    "type": "array",
+                    "description": "Archivo de soporte.",
+                    "required": true,
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/provisions/api/v1/pending/contable-accounts": {
+      "get": {
+        "tags": [
+          "Pending"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Listar cuentas contables",
+        "description": "Método para listar cuentas contables",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/provisions/api/v1/pending": {
+      "get": {
+        "tags": [
+          "Pending"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Listar pendientes",
+        "description": "Método para listar pendientes",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "openapi": {
+      "0": "3",
+      "1": ".",
+      "2": "0",
+      "3": ".",
+      "4": "0"
+    },
+    "info": {
+      "title": "Provisions API",
+      "version": "1.0.0"
+    },
+    "servers": {
+      "0": {
+        "url": "http://localhost:3001/provisions/api/v1"
+      }
+    },
+    "/pending/provisions-list": {
+      "get": {
+        "summary": "Obtener lista de provisiones individuales pendientes",
+        "description": "Obtiene una lista paginada de provisiones pendientes.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Número de página."
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Tamaño de la página (número de elementos por página)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta exitosa.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "results": {
+                        "type": "object"
+                      }
+                    },
+                    "foundProvisionsCount": {
+                      "type": "integer"
+                    },
+                    "allProvisionsCount": {
+                      "type": "integer"
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "current": {
+                        "type": "integer"
+                      },
+                      "perPage": {
+                        "type": "integer"
+                      },
+                      "previous": {
+                        "type": "boolean"
+                      },
+                      "next": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado. Se requiere autenticación.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/provisions/api/v1/pending/rejection-provision/{provisionId}": {
+      "patch": {
+        "tags": [
+          "Pending"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "provisionId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "summary": "Rechazar solicitud de provisión",
+        "description": "Rechazar solicitud de provisión",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "rejectionReason": {
+                    "type": "string",
+                    "example": "Motivo del rechazo",
+                    "required": true,
+                    "description": "Motivo del rechazo"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/provisions/api/v1/user/create": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Creación de usuario solicitante",
+        "description": "Creación de usuario solicitante",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Patricia",
+                    "required": true,
+                    "description": "Nombre del usuario."
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "example": "Gomez Lopez",
+                    "required": true,
+                    "description": "Apellidos del usuario"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "patygomez@gmail.com",
+                    "required": true,
+                    "description": "Email del usuario"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/provisions/api/v1/user": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Obtener lista de usuarios",
+        "description": "Obtiene una lista paginada de usuarios.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Número de página."
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Tamaño de la página (número de elementos por página)."
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Cadena a buscar"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta exitosa.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "results": {
+                        "type": "object"
+                      }
+                    },
+                    "foundUsersCount": {
+                      "type": "integer"
+                    },
+                    "allUsersCount": {
+                      "type": "integer"
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "current": {
+                        "type": "integer"
+                      },
+                      "perPage": {
+                        "type": "integer"
+                      },
+                      "previous": {
+                        "type": "boolean"
+                      },
+                      "next": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado. Se requiere autenticación.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Actualización de estatus de usuario",
+        "description": "Actualización de estatus de usuario",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "userId",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Id del usuario."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "status": {
+                    "type": "integer",
+                    "example": 1,
+                    "required": true,
+                    "description": "Indicador si esta activo=1 o inactivo=0"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "tags": []
+}

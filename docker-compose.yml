@@ -1,0 +1,20 @@
+#docker-compose V0.0.2'
+version: "3.9"
+services:
+  database:
+    image: "mariadb"
+    container_name: database
+    restart: always
+    ports:
+      - "3320:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=test
+      - TZ=America/Bogota
+    command: --event_scheduler=ON
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6380:6379"
