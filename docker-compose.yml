@@ -1,20 +1,25 @@
-#docker-compose V0.0.2'
-version: "3.9"
 services:
-  database:
-    image: "mariadb"
-    container_name: database
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
     restart: always
     ports:
-      - "3320:3306"
+      - "5432:5432"           # cambia el puerto de la izquierda si ya usas 5432
     environment:
-      - MYSQL_ROOT_PASSWORD=test
+      - POSTGRES_USER=todo_app
+      - POSTGRES_PASSWORD=todo1234*
+      - POSTGRES_DB=todo_app
       - TZ=America/Bogota
-    command: --event_scheduler=ON
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      # Si quieres ejecutar SQLs de inicio, descomenta y coloca tus .sql en ./docker/initdb
+      # - ./docker/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todo_app -d todo_app"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
-  redis:
-    image: redis:alpine
-    container_name: redis
-    restart: always
-    ports:
-      - "6380:6379"
+volumes:
+  pg_data:
+

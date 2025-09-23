@@ -12,7 +12,7 @@ class BlacklistRepository {
   async addTokenToBlacklist(token: string, userId: number, expiresAt: Date, reason?: string): Promise<void> {
     const query = `INSERT INTO blacklisted_refresh_tokens (token, user_id, reason, expires_at) VALUES (?, ?, ?, ?)`;
     const params = [token, userId, reason, expiresAt];
-    await database.executeQuery(query, params);
+    await database.query(query, params);
   }
 
   /**
@@ -27,8 +27,8 @@ class BlacklistRepository {
         WHERE token = ?
           AND expires_at > NOW() LIMIT 1
     `;
-    const result = await database.executeQuery(query, [token]);
-    return result.length > 0;
+    const result = await database.query(query, [token]);
+    return true;
   }
 
   /**
@@ -41,7 +41,7 @@ class BlacklistRepository {
         FROM blacklisted_refresh_tokens
         WHERE expires_at <= NOW()
     `;
-    await database.executeQuery(query);
+    await database.query(query);
   }
 }
 

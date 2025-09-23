@@ -7,9 +7,6 @@ export const STATUSES = {
 export const ENDPOINTS_WITH_AUTHORIZATION = [
   '/api/auth/login',
   '/api/auth/refreshToken',
-  '/api/auth/resetPassword',
-  '/api/user/createPassword',
-  '/api/user/forgotPassword',
 ];
 
 export const BASE_ENDPOINT = '/api';
@@ -18,4 +15,4 @@ export const ROLES = {
   ADMINISTRADOR: 'Administrador',
 };
 
-export const BCRYPT_SALT_ROUNDS = 12;
+export const BCRYPT_SALT_ROUNDS = 10;

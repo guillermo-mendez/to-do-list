@@ -6,16 +6,29 @@ class AuthValidator {
    * Valida los datos del login.
    * @param data - Datos a validar.
    */
-  public loginValidation(data: any) {
+  public createTaskValidation(data: any) {
     const schema = yup.object().shape({
-      email: yup
+      categoriaId: yup
+        .number()
+        .required('El campo categoria es requerido'),
+      titulo: yup
         .string()
-        .required('El campo email es requerido')
-        .min(3, 'El email debe tener al menos 3 caracteres'),
-      password: yup
+        .required('Debe ingresar un titulo'),
+      descripcion: yup
         .string()
-        .required('Debe ingresar una contraseña')
-        .min(6, 'La contraseña debe tener al menos 6 caracteres'),
+        .required('Debe ingresar una descripcion'),
+      prioridad: yup
+        .string()
+        .required('Debe ingresar una prioridad'),
+      completada: yup
+        .string()
+        .required('Debe ingresar una prioridad'),
+      fechaVencimeinto: yup
+        .string()
+        .required('Debe ingresar una fecha de vencimiento'),
+      completadaEn: yup
+        .string()
+        .required('Debe ingresar una fecha de completada'),
     });
     validateSchema(schema, data);
   }

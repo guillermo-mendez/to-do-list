@@ -7,10 +7,9 @@ import helmet from 'helmet';
 import {config} from 'dotenv';
 import swaggerUI from 'swagger-ui-express';
 import {errorHandlerMiddleware} from 'error-handler-express-ts';
-import connection from './database/connection';
+import {testConnection} from './database/connection';
  import swaggerSpec from './docs/configuration';
 import authentication from './middlewares/authentication'
-import authorization from './middlewares/authorization'
 import routers from './routers-version';
 
 
@@ -23,14 +22,15 @@ class ServerSettings {
   mountServer() {
     this.corsOrigin();
     this.settings();
-    this.testDatabaseConnection();
     this.middlewares();
+    this.testDatabaseConnection();
     this.docs();
   }
 
   private corsOrigin() {
+    const corsOrigin: string = process.env.CORS_ORIGIN || '*';
     const corsOptions = {
-      origin: ['http://localhost:3000',],
+      origin: [corsOrigin],
       methods: ['GET', 'HEAD', 'PUT', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
       optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 200
     };
@@ -59,7 +59,6 @@ class ServerSettings {
   private middlewares() {
     app.use(helmet()); // Helmet para seguridad
     app.use(authentication); // Middleware de autenticación
-   // app.use(authorization); // Middleware de autorización
   }
 
   private docs() {
@@ -67,7 +66,7 @@ class ServerSettings {
   };
 
   async testDatabaseConnection(): Promise<void> {
-    await connection.testConnection();
+   // await testConnection();
     this.routes();
   };
 

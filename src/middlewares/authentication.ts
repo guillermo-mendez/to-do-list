@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from 'express';
 import jwtService from '../security/JWTService';
 import {ENDPOINTS_WITH_AUTHORIZATION} from '../constants';
 import {UserAuth} from "../entities/Authentication";
+import authRepository from "../lib/repositories/AuthRepository";
 
 // Define el tipo de datos que el middleware va a agregar a la solicitud
 declare global {
@@ -38,9 +39,11 @@ const authentication = async (req: Request, res: Response, next: NextFunction):P
 
   try {
     const {email, role} = jwtService.verifyToken(accessToken);
-    // buscar información de usuario por email result {userId}
-
-    req.user = <UserAuth>{userId: 1, email, role}
+    if (!email) {
+      return res.status(403).json({statusText: 'Invalid authentication token'});
+    }
+    const user = await authRepository.getUserInfoByEmail(email);
+    req.user = <UserAuth>{userId: user.userId, email, role}
     next();
 
   } catch (error) {
