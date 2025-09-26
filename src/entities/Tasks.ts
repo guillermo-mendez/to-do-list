@@ -1,10 +1,16 @@
 export interface CreateTask {
-  categoriaId: string;
   userId?: string;
+  categoriaId: string;
+  prioridadId: string;
   titulo: string;
   descripcion: string;
-  prioridad: string;
-  completada: string;
-  fechaVencimeinto: string;
-  completadaEn: string;
+  fechaVencimiento: string;
+}
+
+export interface UpdateTask {
+  categoriaId: string;
+  prioridadId: string;
+  titulo: string;
+  descripcion: string;
+  fechaVencimiento: string;
 }

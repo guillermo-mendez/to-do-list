@@ -8,6 +8,13 @@ VALUES
     ('11111111-1111-1111-1111-111111111111','Personal','#16a34a')
     ON CONFLICT DO NOTHING;
 
+INSERT INTO prioridades (name)
+VALUES
+    ('Baja'),
+    ('Media'),
+    ('Alta')
+    ON CONFLICT DO NOTHING;
+
 INSERT INTO etiquetas (user_id, name, color_hex)
 VALUES
     ('11111111-1111-1111-1111-111111111111','urgente','#ef4444'),

@@ -1,6 +1,6 @@
 import database from "../../database/connection";
 import {UserRegistration, UserRow} from "../../entities/Authentication";
-import {CreateTask} from "../../entities/Tasks";
+import {CreateTask, UpdateTask} from "../../entities/Tasks";
 
 
 class TasksRepository {
@@ -15,19 +15,23 @@ class TasksRepository {
         SELECT
             T.id            AS "taskId",
             T.categoria_id  AS "categoriaId",
+            C.name        AS "categoriaName",         
+            T.prioridad_id  AS "prioridadId",
+            P.name        AS "prioridadName",
             T.titulo,
-            T.descripcion,
-            T.prioridad,
+            T.descripcion,            
             T.completada,
-            T.fecha_vencimeinto AS "fechaVencimeinto"
-            T.completada_en AS "completadaEn",
-            T.created_at    AS "createdAt",
+            T.fecha_vencimiento AS "fechaVencimiento",
+            T.completada_at AS "completadaAt",
+            T.created_at    AS "createdAt"
         FROM tareas T
+        INNER JOIN prioridades P ON T.prioridad_id = P.id
+        INNER JOIN categorias C ON T.categoria_id = C.id
         WHERE T.deleted_at IS NULL
           AND T.user_id = $1;
     `;
 
-    const { rows } = await database.query<UserRow>(query, [userId]);
+    const { rows } = await database.query(query, [userId]);
     return rows;
   }
 
@@ -41,46 +45,80 @@ class TasksRepository {
     const query = `INSERT INTO tareas (
                     user_id,
                     categoria_id,
+                    prioridad_id,
                     titulo,
-                    descripcion,
-                    prioridad,
-                    completada,
-                    fecha_vencimiento,
-                    completada_en
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`;
+                    descripcion, 
+                    fecha_vencimiento                    
+    ) VALUES ($1, $2, $3, $4, $5, $6);`;
     const parameters = [
       userId,
       data.categoriaId,
+      data.prioridadId,
       data.titulo,
       data.descripcion,
-      data.prioridad,
-      data.completada,
-      data.fechaVencimeinto,
-      data.completadaEn
+      data.fechaVencimiento
     ];
 
-    await database.query<UserRow>(query, parameters);
+    await database.query(query, parameters);
   }
 
   /**
-   * Obtiene la información del usuario por su email.
-   * @param email
+   * Actualizar una tarea.
+   * @param data<UpdateTask>
+   * @param taskId
+   * @param userId
    */
-  async getUserInfoByEmail(email: string): Promise<UserRow> {
+  async updateTask(data: UpdateTask, taskId:string, userId: string): Promise<void> {
 
-    const query = `
-        SELECT U.id            AS "userId",
-               U.name          AS "name",
-               U.email         AS "email"               
-        FROM usuarios U
-        WHERE U.deleted_at IS NULL
-          AND LOWER(U.email) = LOWER($1) LIMIT 1;
-    `;
+    const query = `UPDATE tareas SET                    
+                    categoria_id = $1,
+                    prioridad_id = $2,
+                    titulo = $3,
+                    descripcion = $4, 
+                    fecha_vencimiento = $5
+                  WHERE id = $6 AND user_id = $7;`;
+    const parameters = [
+      data.categoriaId,
+      data.prioridadId,
+      data.titulo,
+      data.descripcion,
+      data.fechaVencimiento,
+      taskId,
+      userId,
+    ];
 
-    const {rows} = await database.query<UserRow>(query, [email.trim()]);
-    return rows[0] ?? null;
+    await database.query(query, parameters);
   }
 
+  /**
+   * Eliminar una tarea.
+   * @param taskId
+   * @param userId
+   */
+  async deleteTask(taskId:string, userId: string): Promise<void> {
+
+    const query = `UPDATE tareas SET                    
+                    deleted_at = NOW()
+                  WHERE id = $1 AND user_id = $2;`;
+    const parameters = [
+      taskId,
+      userId,
+    ];
+
+    await database.query(query, parameters);
+  }
+
+  /**
+   * Completar una tarea.
+   * @param taskId
+   * @param userId
+   */
+  async completeTask(taskId:string, userId: string): Promise<void> {
+    const query = `UPDATE tareas SET completada = true WHERE id = $1 AND user_id = $2;`;
+    const parameters = [taskId,userId];
+
+    await database.query(query, parameters);
+  }
 }
 
 export default new TasksRepository();

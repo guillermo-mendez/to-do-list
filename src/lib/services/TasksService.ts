@@ -1,10 +1,8 @@
 import {ResultService} from "../../entities/Result-service";
 import {errorHandler, responseHandler} from 'error-handler-express-ts';
-import bcrypt from 'bcryptjs';
 import tasksRepository from '../repositories/TasksRepository';
-import jwtService from '../../security/JWTService';
 import {UserAuth} from "../../entities/Authentication";
-import {CreateTask} from "../../entities/Tasks";
+import {CreateTask, UpdateTask} from "../../entities/Tasks";
 
 class TasksService {
   /**
@@ -44,37 +42,59 @@ class TasksService {
   }
 
   /**
-   * Método para obtener el perfil del usuario.
-   * @param user
+   * Método para actualizar una tarea.
+   * @param data<UpdateTask>
+   * @param taskId
+   * @param userId
    */
-  async getUserProfile(user:UserAuth) {
+  async updateTask(data:UpdateTask, taskId:string, userId: string): Promise<ResultService> {
     try {
-      const userInfo = await tasksRepository.getUserInfoByEmail(user.email);
 
-      return responseHandler(userInfo);
+      await tasksRepository.updateTask(data,taskId,userId);
+      const tasks = await tasksRepository.getTasks(userId);
+
+      return responseHandler(tasks);
+
 
     } catch (err) {
-      throw new errorHandler().error(err).method('getUserProfile').debug(user).build();
+      throw new errorHandler().error(err).method('updateTask').debug().build();
     }
   }
 
   /**
-   * Método para refrescar el token de acceso.
-   * @param data
+   * Método para eliminar una tarea.
+   * @param taskId
+   * @param userId
    */
-  async refreshToken(data: { refreshToken: string }) {
+  async deleteTask(taskId:string, userId: string): Promise<ResultService> {
     try {
-      const refreshTokenData = jwtService.verifyToken(data.refreshToken, true);
-      const {email, userName, role} = refreshTokenData;
 
-      const generatedAccessTokenData = jwtService.generateAccessToken({email, userName, role});
-      const generatedRefreshTokenData = jwtService.generateRefreshToken({email, userName, role});
+      await tasksRepository.deleteTask(taskId,userId);
+      const tasks = await tasksRepository.getTasks(userId);
 
-      const tokens = {...generatedAccessTokenData, ...generatedRefreshTokenData, role};
-      return responseHandler(tokens, 'Token actualizado');
+      return responseHandler(tasks);
+
 
     } catch (err) {
-      throw new errorHandler().error(err).method('refreshToken').debug(data).build();
+      throw new errorHandler().error(err).method('deleteTask').debug().build();
+    }
+  }
+
+/**
+   * Método para completar una tarea.
+   * @param taskId
+   * @param userId
+   */
+  async completeTask(taskId:string, userId: string): Promise<ResultService> {
+    try {
+      await tasksRepository.completeTask(taskId,userId);
+      const tasks = await tasksRepository.getTasks(userId);
+
+      return responseHandler(tasks);
+
+
+    } catch (err) {
+      throw new errorHandler().error(err).method('completeTask').debug().build();
     }
   }
 }

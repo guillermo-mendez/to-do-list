@@ -35,9 +35,10 @@ class TasksController {
    * @param res
    */
   async updateTask(req: Request, res: Response): Promise<Response> {
-    validation.createTaskValidation(req.body);
+    const taskId = req.params.id;
+    validation.updateTaskValidation({...req.body,taskId});
     const userId = req.user?.userId;
-    const result = await tasksService.createTask(req.body, userId);
+    const result = await tasksService.updateTask(req.body, taskId, userId);
     return res.json(result);
   }
 
@@ -47,9 +48,10 @@ class TasksController {
    * @param res
    */
   async deleteTask(req: Request, res: Response): Promise<Response> {
-    validation.createTaskValidation(req.body);
+    const taskId = req.params.id;
+    validation.deleteTaskValidation({taskId});
     const userId = req.user?.userId;
-    const result = await tasksService.createTask(req.body, userId);
+    const result = await tasksService.deleteTask(taskId, userId);
     return res.json(result);
   }
 
@@ -59,9 +61,11 @@ class TasksController {
    * @param res
    */
   async completeTask(req: Request, res: Response): Promise<Response> {
-    validation.createTaskValidation(req.body);
+    const taskId = req.params.id;
+    console.log({taskId});
+    validation.completeTaskValidation({taskId});
     const userId = req.user?.userId;
-    const result = await tasksService.createTask(req.body, userId);
+    const result = await tasksService.completeTask(taskId, userId);
     return res.json(result);
   }
 

@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import authController from '../controllers/AuthController';
+import categoriesController from '../controllers/CategoriesController';
 import { catchAsync } from 'error-handler-express-ts';
 const router = Router();
 
-router.get('/', catchAsync(authController.login)); // Obtener todas las categoria del usuario autenticado
-router.post('/', catchAsync(authController.login)); // Crear nueva categoria
-router.put('/:id', catchAsync(authController.login)); // Actualizar categoria
-router.delete('/:id', catchAsync(authController.login)); // Eliminar categoria
+router.get('/', catchAsync(categoriesController.getCategories)); // Obtener todas las categoria del usuario autenticado
+router.post('/', catchAsync(categoriesController.createCategory)); // Crear nueva categoria
+router.put('/:id', catchAsync(categoriesController.updateCategory)); // Actualizar categoria
+router.delete('/:id', catchAsync(categoriesController.deleteCategory)); // Eliminar categoria
 
 
 export default router;

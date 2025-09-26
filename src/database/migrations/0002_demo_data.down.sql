@@ -9,5 +9,8 @@ DELETE FROM categorias
 WHERE user_id = '11111111-1111-1111-1111-111111111111'
   AND name IN ('Trabajo','Personal');
 
+DELETE FROM prioridades
+WHERE name IN ('Baja','Media','Alta');
+
 DELETE FROM usuarios
 WHERE id = '11111111-1111-1111-1111-111111111111';
